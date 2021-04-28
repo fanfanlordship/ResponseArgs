@@ -5,9 +5,9 @@ package org.fanfan.resp.param.exception;
  * @author: fanfanlordship
  * @create: 2021-03-03 23:54
  */
-public class HasBeenInitializedException extends Exception {
+public class HasBeanInitializedException extends Exception {
 
-    public HasBeenInitializedException() {
+    public HasBeanInitializedException() {
         super("config has been initialized");
     }
 }

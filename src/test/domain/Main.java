@@ -1,19 +1,13 @@
 package test.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.fanfan.resp.param.CommonConfig;
 import org.fanfan.resp.param.RunStart;
-import org.fanfan.resp.param.annotation.ResponseField;
-import org.fanfan.resp.param.config.DefaultResponseParamConfig;
 import org.fanfan.resp.param.model.RespField;
 import org.fanfan.resp.param.model.RespFieldNode;
 import org.fanfan.resp.param.service.FieldDocument;
 import test.config.ResponseParamConfig;
 import test.model.Online;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,16 +21,18 @@ public class Main {
         ObjectMapper JSON = new ObjectMapper();
 
         //加载项目配置
-        RunStart.load();
+        RunStart.load(new ResponseParamConfig());
         FieldDocument fieldDocument = new FieldDocument(Online.class);
-        List<RespField> param = fieldDocument.params();
-        System.out.println(param);
-        List<RespFieldNode> respFieldNodes = fieldDocument.paramTree();
-        System.out.println(respFieldNodes);
-
-        try {
-            System.out.println(JSON.writeValueAsString(respFieldNodes));
-        } catch (JsonProcessingException e) {
+        //获取参数列表
+        List<RespField> param = fieldDocument.args();
+        for (RespField respField : param) {
+            System.out.println(respField);
+        }
+        System.out.println("****************************************");
+        //获取参数树
+        List<RespFieldNode> respFieldNodes = fieldDocument.argNodes();
+        for (RespFieldNode respFieldNode : respFieldNodes) {
+            System.out.println(respFieldNode);
         }
     }
 }

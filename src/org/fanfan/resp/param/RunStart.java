@@ -1,7 +1,10 @@
 package org.fanfan.resp.param;
 
+import org.fanfan.resp.param.config.DefaultConfig;
 import org.fanfan.resp.param.config.DefaultResponseParamConfig;
-import org.fanfan.resp.param.exception.HasBeenInitializedException;
+import org.fanfan.resp.param.model.PublicArg;
+
+import java.util.List;
 
 /**
  * @description: 项目启动
@@ -14,8 +17,10 @@ public class RunStart {
         load(new DefaultResponseParamConfig());
     }
 
-    private static void load(DefaultResponseParamConfig defaultResponseParamConfig) {
-        defaultResponseParamConfig.filedTypeMappingParamType(CommonConfig.FILEDTYPE_PARAMTYPE);
-        defaultResponseParamConfig.appendFiledTypeMappingParamType(CommonConfig.FILEDTYPE_PARAMTYPE);
+    public static void load(DefaultResponseParamConfig defaultResponseParamConfig) {
+        defaultResponseParamConfig.filedTypeMappingParamType(DefaultConfig.getFiledtypeParamtype());
+        defaultResponseParamConfig.appendFiledTypeMappingParamType(DefaultConfig.getFiledtypeParamtype());
+        List<PublicArg> publicArgs = DefaultConfig.getPublicArgs();
+        defaultResponseParamConfig.publicArgs(publicArgs);
     }
 }

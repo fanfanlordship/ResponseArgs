@@ -1,8 +1,9 @@
 package test.config;
 
 import org.fanfan.resp.param.config.DefaultResponseParamConfig;
+import org.fanfan.resp.param.model.PublicArg;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @description:
@@ -12,6 +13,9 @@ import java.util.Map;
 public class ResponseParamConfig extends DefaultResponseParamConfig {
 
     @Override
-    public void filedTypeMappingParamType(Map<Class, String> mapping) {
+    public void publicArgs(List<PublicArg> publicArgs) {
+        publicArgs.add(new PublicArg("状态码", "CODE", "状态码"));
+        publicArgs.add(new PublicArg("信息", "MSG", "信息"));
+        publicArgs.add(new PublicArg("结果", "result", "结果"));
     }
 }

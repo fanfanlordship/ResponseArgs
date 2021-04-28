@@ -1,5 +1,6 @@
 package test.model;
 
+import org.fanfan.resp.param.annotation.Document;
 import org.fanfan.resp.param.annotation.ResponseField;
 
 /**
@@ -7,6 +8,7 @@ import org.fanfan.resp.param.annotation.ResponseField;
  * @author: fanfanlordship
  * @create: 2021-03-03 23:06
  */
+@Document
 public class InC {
 
     @ResponseField(name = "开始")

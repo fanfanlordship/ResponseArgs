@@ -1,13 +1,17 @@
 package org.fanfan.resp.param.service;
 
-import org.fanfan.resp.param.CommonConfig;
+import org.fanfan.resp.param.config.DefaultConfig;
+import org.fanfan.resp.param.annotation.Document;
 import org.fanfan.resp.param.annotation.ResponseField;
+import org.fanfan.resp.param.model.PublicArg;
 import org.fanfan.resp.param.model.RespField;
 import org.fanfan.resp.param.model.RespFieldNode;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @description: 字段文档
@@ -21,55 +25,65 @@ public class FieldDocument {
     private Class responsePackage;
 
     public FieldDocument(Class responsePackage) {
-        this.responsePackage = responsePackage;
+        Annotation annotation = responsePackage.getAnnotation(Document.class);
+        if (annotation != null) {
+            this.responsePackage = responsePackage;
+        }
+//        new NotDocumentException(responsePackage);
     }
 
-    public List<RespField> params() {
+    /**
+     * 获取响应参数列表
+     *
+     * @return
+     */
+    public List<RespField> args() {
         List<RespField> objects = new ArrayList<>();
-        params(responsePackage, objects);
+        List<PublicArg> publicArgs = DefaultConfig.getPublicArgs();
+        if (!publicArgs.isEmpty()) {
+            objects.addAll(publicArgs.stream().map(o -> new RespField(o)).collect(Collectors.toList()));
+        }
+        args(responsePackage, objects);
         return objects;
     }
 
-    private void params(Class clazz, List<RespField> respFields) {
+    private void args(Class clazz, List<RespField> respFields) {
         Field[] declaredFields = clazz.getDeclaredFields();
         for (Field field : declaredFields) {
-            //获取注解
-            ResponseField annotation = field.getAnnotation(ResponseField.class);
-            if (annotation == null) {
+            ResponseField responseField = field.getAnnotation(ResponseField.class);
+            if (responseField == null) {
                 continue;
             }
             Class<?> type = field.getType();
 
             RespField respField = new RespField(clazz, field);
             respField.setValue(field.getName());
-            respField.setName(annotation.name());
+            respField.setName(responseField.name());
+            respField.setMemo(responseField.memo());
 
             //生成类型
-            String typeStr = CommonConfig.getTypeFormatStr(type);
+            String typeStr = DefaultConfig.getTypeFormatStr(type);
             respField.setType(typeStr);
 
             respFields.add(respField);
 
-            if (type != String.class
-                    && type != Integer.class
-                    && type != Double.class
-                    && type != Boolean.class) {
-                params(type, respFields);
+            Document document = type.getAnnotation(Document.class);
+            if (document != null) {
+                args(type, respFields);
             }
         }
     }
 
-    public List<RespFieldNode> paramTree() {
+    public List<RespFieldNode> argNodes() {
         RespFieldNode respFieldNode = new RespFieldNode();
-        paramsTree(respFieldNode, responsePackage);
+        argNodes(respFieldNode, responsePackage);
         return respFieldNode.getSub();
     }
 
-    private void paramsTree(RespFieldNode parent, Class clazz) {
+    private void argNodes(RespFieldNode parent, Class clazz) {
         Field[] declaredFields = clazz.getDeclaredFields();
         List<RespFieldNode> respFieldNodes = new ArrayList<>();
         for (Field field : declaredFields) {
-            //获取注解
             ResponseField annotation = field.getAnnotation(ResponseField.class);
             if (annotation == null) {
                 continue;
@@ -81,16 +95,14 @@ public class FieldDocument {
             respFieldNode.setName(annotation.name());
 
             //生成类型
-            String typeStr = CommonConfig.getTypeFormatStr(type);
+            String typeStr = DefaultConfig.getTypeFormatStr(type);
             respFieldNode.setType(typeStr);
 
             respFieldNodes.add(respFieldNode);
 
-            if (type != String.class
-                    && type != Integer.class
-                    && type != Double.class
-                    && type != Boolean.class) {
-                paramsTree(respFieldNode, type);
+            Document document = type.getAnnotation(Document.class);
+            if (document != null) {
+                argNodes(respFieldNode, type);
             }
         }
 

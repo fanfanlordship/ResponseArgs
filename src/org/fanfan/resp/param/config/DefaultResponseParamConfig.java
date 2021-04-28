@@ -1,5 +1,7 @@
 package org.fanfan.resp.param.config;
 
+import org.fanfan.resp.param.model.PublicArg;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,5 +35,6 @@ public class DefaultResponseParamConfig {
     public void appendFiledTypeMappingParamType(Map<Class, String> mapping) {
     }
 
-    public void before
+    public void publicArgs(List<PublicArg> publicArgs) {
+    }
 }
